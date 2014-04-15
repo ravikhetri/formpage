@@ -1,0 +1,48 @@
+<?php
+
+
+
+/**
+ * @file
+ * Install, update and uninstall functions for the user module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function formpage_schema() {
+  $schema['contact_details'] = array(
+    'description' => 'Stores distributed authentication mapping.',
+    'fields' => array(
+      'aid' => array(
+        'description' => 'Primary Key: Unique authmap ID.',
+        'type' => 'serial',  
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'firstname' => array(
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'email',
+      ),
+      'email' => array(
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'email',
+      ),
+    ),
+    'unique keys' => array(
+      'firstname' => array('firstname'),
+    ),
+    'primary key' => array('aid'),
+      );
+    
+  
+
+  return $schema;
+
+}

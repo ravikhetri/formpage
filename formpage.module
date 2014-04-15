@@ -1,0 +1,71 @@
+<?php
+function formpage_menu() {
+  $items['formtest'] = array(
+    'title' => 'EMPLOYEE DATA',
+    'page callback' => 'formpagelandinng',
+    'access callback' => TRUE,
+    );  
+  $items['formtest-contact'] = array(
+    'title' => 'Add Contact details',
+    'page callback' => 'drupal_get_form',
+    'page arguments'=>array('contact_details_form'),
+    'access callback' => TRUE,
+    );
+  return $items;
+}
+
+function formpagelandinng() {
+$output = l('Click to Add Contact','formtest-contact');
+$result=db_query('SELECT * FROM contact_details ')->fetchAll();
+  $rows = array();
+  foreach ($result as $record) {
+  $rows[] = array('data'=>array($record->aid,$record->firstname,$record->email));
+  }
+  $header = array('ID','FIRST NAME','EMAIL');
+  $output .= theme('table', array('header' => $header, 'rows'=> $rows));
+  return $output;
+}
+function contact_details_form($form, &$form_state) {
+  $form['firstname'] = array(
+     '#title' => t('Name'),
+     '#type' => 'textfield',
+     '#required' => TRUE,
+    ); 
+
+   $form['email'] = array(
+     '#title' => t('Email Address'),
+     '#type'  => 'textfield',
+     '#required'=>TRUE,
+     );
+
+   $form['submit'] = array(
+     '#value' => 'Submit',
+     '#type' => 'submit',
+     );
+  return $form;
+
+}
+/*for database submition query */
+function contact_details_validate($form_id, &$form_state) {
+  if (trim($form_state['values']['firstname']) == '') {
+    form_set_error('firstname', 'Last Name field is required field');
+    }
+  if (!valid_email_address(trim($form_state['values']['email']))) {
+    form_set_error('email', 'Please enter valid email address');
+  }
+}
+
+/*for submit the data in to table */
+
+function contact_details_form_submit($form_id, &$form_state) {
+
+  $nid = db_insert('contact_details') // Table name no longer needs {}
+
+  ->fields(array(
+      'firstname' => $form_state['values']['firstname'],
+      'email'     => $form_state['values']['email'],))->execute();
+
+drupal_set_message('data saved');
+drupal_goto('formtest');
+}
+?>
